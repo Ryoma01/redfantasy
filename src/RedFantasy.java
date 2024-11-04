@@ -13,16 +13,16 @@ public class RedFantasy {
     int[] cpuMonsters = new int[5];
     int[] cpuMonstersPoint = new int[5];
 
-    int playerHp = 50;
-    int cpuHp = 50;
-    int playerBonusPoint = 0;        
-    int cpuBonusPoint = 0;
+    int playerHealth = 50;
+    int cpuHealth = 50;
+    int playerBonusPoints = 0;        
+    int cpuBonusPoints = 0;
 
     Random rnd = new Random();
 
     // battle history
-    int[] playerHistory = new int[100];
-    int[] cpuHistory = new int[100];
+    int[] playerHealthHistory = new int[100];
+    int[] cpuHealthHistory = new int[100];
     
     public RedFantasy() {
         // init player/cpu monster array
@@ -30,158 +30,160 @@ public class RedFantasy {
             this.playerMonsters[i] = -1;
             this.cpuMonsters[i] = -1;
         }
-        this.playerHistory[0] = this.playerHp;
-        this.cpuHistory[0] = this.cpuHp;
-        for (int i = 0; i < this.playerHistory.length; i++) {
-            this.playerHistory[i] = -9999;
-            this.cpuHistory[i] = -9999;
+        this.playerHealthHistory[0] = this.playerHealth;
+        this.cpuHealthHistory[0] = this.cpuHealth;
+        for (int i = 0; i < this.playerHealthHistory.length; i++) {
+            this.playerHealthHistory[i] = -9999;
+            this.cpuHealthHistory[i] = -9999;
         }
     }
 
     public void startPhase() {
 
-        //Draw player's monster card
-        // playerMonsters.length -3 ~ playerMonsters.length までのランダムなint型の数値をp1に代入する
-        int p1 = this.rnd.nextInt(this.playerMonsters.length - 2) + 3;
-        System.out.println("Player Draw " + p1 + " monsters");
-        for (int i = 0; i < p1; i++) {
-            int m = this.rnd.nextInt(this.monsters.length);
-            this.playerMonsters[i] = m;
-            this.playerMonstersPoint[i] = this.monstersPoint[m];
+        // Draw player's monster card
+        int playerDrawCount = this.rnd.nextInt(this.playerMonsters.length - 2) + 3;
+        System.out.println("Player Draw " + playerDrawCount + " monsters");
+        for (int i = 0; i < playerDrawCount; i++) {
+            int monsterIndex = this.rnd.nextInt(this.monsters.length);
+            this.playerMonsters[i] = monsterIndex;
+            this.playerMonstersPoint[i] = this.monstersPoint[monsterIndex];
         }
 
-        ////Draw cpu's monster card
-        int p2 = this.rnd.nextInt(this.cpuMonsters.length -2 ) + 3;
-        System.out.println("CPU Draw " + p2 + " monsters");
-        for (int i = 0; i < p2; i++) {
-            int m = this.rnd.nextInt(this.monsters.length);
-            this.cpuMonsters[i] = m;
-            this.cpuMonstersPoint[i] = this.monstersPoint[m];
+        // Draw CPU's monster card
+        int cpuDrawCount = this.rnd.nextInt(this.cpuMonsters.length - 2) + 3;
+        System.out.println("CPU Draw " + cpuDrawCount + " monsters");
+        for (int i = 0; i < cpuDrawCount; i++) {
+            int monsterIndex = this.rnd.nextInt(this.monsters.length);
+            this.cpuMonsters[i] = monsterIndex;
+            this.cpuMonstersPoint[i] = this.monstersPoint[monsterIndex];
         }
 
         System.out.println("--------------------");
         System.out.print("Player Monsters List:");
-        for(int i = 0; i < this.playerMonsters.length; i++){
-            if(this.playerMonsters[i] != -1){
+        for (int i = 0; i < this.playerMonsters.length; i++) {
+            if (this.playerMonsters[i] != -1) {
                 System.out.print(this.monsters[this.playerMonsters[i]] + " ");
             }
         }
         System.out.print("\nCPU Monsters List:");
-        for(int i = 0; i < this.cpuMonsters.length; i++){
-            if(this.cpuMonsters[i] != -1){
+        for (int i = 0; i < this.cpuMonsters.length; i++) {
+            if (this.cpuMonsters[i] != -1) {
                 System.out.print(this.monsters[this.cpuMonsters[i]] + " ");
             }
         }
         System.out.println("\n--------------------");
         System.out.println("Battle!");
-        int d1 = this.rnd.nextInt(6)+1; //1~6のサイコロを振る
-        System.out.println("Player's Dice'：" + d1);
-        if(d1 == 1){
+        
+        int playerDiceRoll = this.rnd.nextInt(6) + 1; // 1~6のサイコロを振る
+        System.out.println("Player's Dice': " + playerDiceRoll);
+        if (playerDiceRoll == 1) {
             System.out.println("失敗！すべてのモンスターポイントが半分になる");
-            for(int i = 0; i < this.playerMonsters.length; i++){
-                if(this.playerMonsters[i] != -1){
+            for (int i = 0; i < this.playerMonsters.length; i++) {
+                if (this.playerMonsters[i] != -1) {
                     this.playerMonstersPoint[i] = this.playerMonstersPoint[i] / 2;
                 }
             }
-        }else if(d1 == 6){
+        } else if (playerDiceRoll == 6) {
             System.out.println("Critical！すべてのモンスターポイントが倍になる");
-            for(int i = 0; i < this.playerMonsters.length; i++){
-                if(this.playerMonsters[i] != -1){
+            for (int i = 0; i < this.playerMonsters.length; i++) {
+                if (this.playerMonsters[i] != -1) {
                     this.playerMonstersPoint[i] = this.playerMonstersPoint[i] * 2;
                 }
             }
-        }else{
-            this.playerBonusPoint = d1;
+        } else {
+            this.playerBonusPoints = playerDiceRoll;
         }
-        int d2 = this.rnd.nextInt(6)+1; //1~6のサイコロを振る
-        System.out.println("CPU's Dice'：" + d2);
-        if(d2 == 1){
+        
+        int cpuDiceRoll = this.rnd.nextInt(6) + 1; // 1~6のサイコロを振る
+        System.out.println("CPU's Dice': " + cpuDiceRoll);
+        if (cpuDiceRoll == 1) {
             System.out.println("失敗！すべてのモンスターポイントが半分になる");
-            for(int i = 0; i < this.cpuMonsters.length; i++){
-                if(this.cpuMonsters[i] != -1){
+            for (int i = 0; i < this.cpuMonsters.length; i++) {
+                if (this.cpuMonsters[i] != -1) {
                     this.cpuMonstersPoint[i] = this.cpuMonstersPoint[i] / 2;
                 }
             }
-        }else if(d2 == 6){
+        } else if (cpuDiceRoll == 6) {
             System.out.println("Critical！すべてのモンスターポイントが倍になる");
-            for(int i = 0; i < this.cpuMonsters.length; i++){
-                if(this.cpuMonsters[i] != -1){
+            for (int i = 0; i < this.cpuMonsters.length; i++) {
+                if (this.cpuMonsters[i] != -1) {
                     this.cpuMonstersPoint[i] = this.cpuMonstersPoint[i] * 2;
                 }
             }
-        }else{
-            this.cpuBonusPoint = d2;
+        } else {
+            this.cpuBonusPoints = cpuDiceRoll;
         }
 
         System.out.println("--------------------");
         System.out.print("Player Monster Pointの合計:");
-        int p3 = this.playerBonusPoint;
-        for(int i = 0; i < this.playerMonsters.length; i++){
-            if(this.playerMonsters[i] != -1){
-                p3 = p3 + this.playerMonstersPoint[i];
+        int playerTotalPoints = this.playerBonusPoints;
+        for (int i = 0; i < this.playerMonsters.length; i++) {
+            if (this.playerMonsters[i] != -1) {
+                playerTotalPoints = playerTotalPoints + this.playerMonstersPoint[i];
             }
         }
-        System.out.println(p3);
+        System.out.println(playerTotalPoints);
 
         System.out.print("CPU Monster Pointの合計:");
-        int p4 = this.cpuBonusPoint;
-        for(int i = 0; i < this.cpuMonsters.length; i++){
-            if(this.cpuMonsters[i] != -1){
-                p4 = p4 + this.cpuMonstersPoint[i];
+        int cpuTotalPoints = this.cpuBonusPoints;
+        for (int i = 0; i < this.cpuMonsters.length; i++) {
+            if (this.cpuMonsters[i] != -1) {
+                cpuTotalPoints = cpuTotalPoints + this.cpuMonstersPoint[i];
             }
         }
-        System.out.println(p4);
+        System.out.println(cpuTotalPoints);
         System.out.println("--------------------");
 
-        if(p3 > p4){
+        if (playerTotalPoints > cpuTotalPoints) {
             System.out.println("Player Win!");
-            this.cpuHp = this.cpuHp - (p3 - p4);
-        }else if(p4 > p3){
+            this.cpuHealth = this.cpuHealth - (playerTotalPoints - cpuTotalPoints);
+        } else if (cpuTotalPoints > playerTotalPoints) {
             System.out.println("CPU Win!");
-            this.playerHp = this.playerHp - (p4 - p3);
-        }else if(p3 == p4){
+            this.playerHealth = this.playerHealth - (cpuTotalPoints - playerTotalPoints);
+        } else if (playerTotalPoints == cpuTotalPoints) {
             System.out.println("Draw!");
         }
 
-        System.out.println("Player HP is " + this.playerHp);
-        System.out.println("CPU HP is " + this.cpuHp);
+        System.out.println("Player HP is " + this.playerHealth);
+        System.out.println("CPU HP is " + this.cpuHealth);
         
         System.out.println("--------------------");
         // 対戦結果の記録
-        for(int i = 0;i < this.playerHistory.length; i++){
-            if(this.playerHistory[i] == -9999){
-                this.playerHistory[i] = this.playerHp;
+        for (int i = 0; i < this.playerHealthHistory.length; i++) {
+            if (this.playerHealthHistory[i] == -9999) {
+                this.playerHealthHistory[i] = this.playerHealth;
                 break;
             }
         }
-        for(int i = 0;i < this.cpuHistory.length; i++){
-            if(this.cpuHistory[i] == -9999){
-                this.cpuHistory[i] = this.cpuHp;
+        for (int i = 0; i < this.cpuHealthHistory.length; i++) {
+            if (this.cpuHealthHistory[i] == -9999) {
+                this.cpuHealthHistory[i] = this.cpuHealth;
                 break;
             }
         }
     }
-    public int[] getPlayerHistory(){
-        return this.playerHistory;
-    }
-    public int[] getCpuHistory(){
-        return this.cpuHistory;
+
+    public int[] getPlayerHealthHistory() {
+        return this.playerHealthHistory;
     }
 
-    public int getPlayerHp(){
-        return this.playerHp; 
+    public int[] getCpuHealthHistory() {
+        return this.cpuHealthHistory;
     }
 
-    public int getCpuHp(){
-        return this.cpuHp;
+    public int getPlayerHealth() {
+        return this.playerHealth; 
     }
 
-    public void setMonstersPoint(int[] tempMonstersPoint) {
-        this.monstersPoint = tempMonstersPoint;
+    public int getCpuHealth() {
+        return this.cpuHealth;
     }
 
-    public void setMonsterZukan(String[] tempMonsters) {
-        this.monsters = tempMonsters;
+    public void setMonstersPoint(int[] monsterPoints) {
+        this.monstersPoint = monsterPoints;
     }
 
+    public void setMonsterZukan(String[] monsterNames) {
+        this.monsters = monsterNames;
+    }
 }
