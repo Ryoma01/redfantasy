@@ -39,8 +39,16 @@ public class RedFantasy {
     }
 
     public void startPhase() {
+        drawPlayerMonsters();
+        drawCpuMonsters();
+        displayMonsterLists();
+        calculatePoints();
+        displayResults();
+        recordBattleHistory();
+    }
 
-        // Draw player's monster card
+    private void drawPlayerMonsters() {
+         // Draw player's monster card
         int playerDrawCount = this.rnd.nextInt(this.playerMonsters.length - 2) + 3;
         System.out.println("Player Draw " + playerDrawCount + " monsters");
         for (int i = 0; i < playerDrawCount; i++) {
@@ -48,7 +56,9 @@ public class RedFantasy {
             this.playerMonsters[i] = monsterIndex;
             this.playerMonstersPoint[i] = this.monstersPoint[monsterIndex];
         }
+    }
 
+    private void drawCpuMonsters() {
         // Draw CPU's monster card
         int cpuDrawCount = this.rnd.nextInt(this.cpuMonsters.length - 2) + 3;
         System.out.println("CPU Draw " + cpuDrawCount + " monsters");
@@ -57,7 +67,9 @@ public class RedFantasy {
             this.cpuMonsters[i] = monsterIndex;
             this.cpuMonstersPoint[i] = this.monstersPoint[monsterIndex];
         }
+    }
 
+    private void displayMonsterLists() {
         System.out.println("--------------------");
         System.out.print("Player Monsters List:");
         for (int i = 0; i < this.playerMonsters.length; i++) {
@@ -73,91 +85,97 @@ public class RedFantasy {
         }
         System.out.println("\n--------------------");
         System.out.println("Battle!");
-        
+    }
+
+    private void calculatePoints() {
+        playerBonusPoints = rollDiceForPlayer();
+        cpuBonusPoints = rollDiceForCpu();
+    }
+
+    private int rollDiceForPlayer() {
         int playerDiceRoll = this.rnd.nextInt(6) + 1; // 1~6のサイコロを振る
         System.out.println("Player's Dice': " + playerDiceRoll);
-        if (playerDiceRoll == 1) {
-            System.out.println("失敗！すべてのモンスターポイントが半分になる");
-            for (int i = 0; i < this.playerMonsters.length; i++) {
-                if (this.playerMonsters[i] != -1) {
-                    this.playerMonstersPoint[i] = this.playerMonstersPoint[i] / 2;
-                }
-            }
-        } else if (playerDiceRoll == 6) {
-            System.out.println("Critical！すべてのモンスターポイントが倍になる");
-            for (int i = 0; i < this.playerMonsters.length; i++) {
-                if (this.playerMonsters[i] != -1) {
-                    this.playerMonstersPoint[i] = this.playerMonstersPoint[i] * 2;
-                }
-            }
-        } else {
-            this.playerBonusPoints = playerDiceRoll;
-        }
-        
+        return calculateBonusPoints(playerDiceRoll, playerMonsters, playerMonstersPoint);
+    }
+
+    private int rollDiceForCpu() {
         int cpuDiceRoll = this.rnd.nextInt(6) + 1; // 1~6のサイコロを振る
         System.out.println("CPU's Dice': " + cpuDiceRoll);
-        if (cpuDiceRoll == 1) {
-            System.out.println("失敗！すべてのモンスターポイントが半分になる");
-            for (int i = 0; i < this.cpuMonsters.length; i++) {
-                if (this.cpuMonsters[i] != -1) {
-                    this.cpuMonstersPoint[i] = this.cpuMonstersPoint[i] / 2;
-                }
-            }
-        } else if (cpuDiceRoll == 6) {
-            System.out.println("Critical！すべてのモンスターポイントが倍になる");
-            for (int i = 0; i < this.cpuMonsters.length; i++) {
-                if (this.cpuMonsters[i] != -1) {
-                    this.cpuMonstersPoint[i] = this.cpuMonstersPoint[i] * 2;
-                }
-            }
-        } else {
-            this.cpuBonusPoints = cpuDiceRoll;
-        }
+        return calculateBonusPoints(cpuDiceRoll, cpuMonsters, cpuMonstersPoint);
+    }
 
+    private int calculateBonusPoints(int diceRoll, int[] monsters, int[] monstersPoint) {
+        if (diceRoll == 1) {
+            halveMonsterPoints(monsters, monstersPoint);
+        } else if (diceRoll == 6) {
+            doubleMonsterPoints(monsters, monstersPoint);
+        }
+        return diceRoll;
+    }
+
+    private void halveMonsterPoints(int[] monsters, int[] monstersPoint) {
+        System.out.println("失敗！すべてのモンスターポイントが半分になる");
+        for (int i = 0; i < monsters.length; i++) {
+            if (monsters[i] != -1) {
+                monstersPoint[i] = monstersPoint[i] / 2;
+            }
+        }
+    }
+
+    private void doubleMonsterPoints(int[] monsters, int[] monstersPoint) {
+        System.out.println("Critical！すべてのモンスターポイントが倍になる");
+        for (int i = 0; i < monsters.length; i++) {
+            if (monsters[i] != -1) {
+                monstersPoint[i] = monstersPoint[i] * 2;
+            }
+        }
+    }
+
+    private void displayResults() {
+        int playerTotalPoints = calculateTotalPoints(playerMonsters, playerMonstersPoint, playerBonusPoints);
+        int cpuTotalPoints = calculateTotalPoints(cpuMonsters, cpuMonstersPoint, cpuBonusPoints);
+        System.out.println("Player Monster Pointの合計: " + playerTotalPoints);
+        System.out.println("CPU Monster Pointの合計: " + cpuTotalPoints);
         System.out.println("--------------------");
-        System.out.print("Player Monster Pointの合計:");
-        int playerTotalPoints = this.playerBonusPoints;
-        for (int i = 0; i < this.playerMonsters.length; i++) {
-            if (this.playerMonsters[i] != -1) {
-                playerTotalPoints = playerTotalPoints + this.playerMonstersPoint[i];
-            }
-        }
-        System.out.println(playerTotalPoints);
 
-        System.out.print("CPU Monster Pointの合計:");
-        int cpuTotalPoints = this.cpuBonusPoints;
-        for (int i = 0; i < this.cpuMonsters.length; i++) {
-            if (this.cpuMonsters[i] != -1) {
-                cpuTotalPoints = cpuTotalPoints + this.cpuMonstersPoint[i];
-            }
-        }
-        System.out.println(cpuTotalPoints);
-        System.out.println("--------------------");
-
-        if (playerTotalPoints > cpuTotalPoints) {
-            System.out.println("Player Win!");
-            this.cpuHealth = this.cpuHealth - (playerTotalPoints - cpuTotalPoints);
-        } else if (cpuTotalPoints > playerTotalPoints) {
-            System.out.println("CPU Win!");
-            this.playerHealth = this.playerHealth - (cpuTotalPoints - playerTotalPoints);
-        } else if (playerTotalPoints == cpuTotalPoints) {
-            System.out.println("Draw!");
-        }
-
+        determineWinner(playerTotalPoints, cpuTotalPoints);
         System.out.println("Player HP is " + this.playerHealth);
         System.out.println("CPU HP is " + this.cpuHealth);
-        
         System.out.println("--------------------");
-        // 対戦結果の記録
-        for (int i = 0; i < this.playerHealthHistory.length; i++) {
-            if (this.playerHealthHistory[i] == -9999) {
-                this.playerHealthHistory[i] = this.playerHealth;
-                break;
+    }
+
+    private int calculateTotalPoints(int[] monsters, int[] monstersPoint, int bonusPoints) {
+        int totalPoints = bonusPoints;
+        for (int i = 0; i < monsters.length; i++) {
+            if (monsters[i] != -1) {
+                totalPoints += monstersPoint[i];
             }
         }
-        for (int i = 0; i < this.cpuHealthHistory.length; i++) {
-            if (this.cpuHealthHistory[i] == -9999) {
-                this.cpuHealthHistory[i] = this.cpuHealth;
+        return totalPoints;
+    }
+
+    private void determineWinner(int playerTotalPoints, int cpuTotalPoints) {
+        if (playerTotalPoints > cpuTotalPoints) {
+            System.out.println("Player Wins!");
+            this.cpuHealth -= (playerTotalPoints - cpuTotalPoints);
+        } else if (cpuTotalPoints > playerTotalPoints) {
+            System.out.println("CPU Wins!");
+            this.playerHealth -= (cpuTotalPoints - playerTotalPoints);
+        } else {
+            System.out.println("Draw!");
+        }
+    }
+
+    private void recordBattleHistory() {
+        // 対戦結果の記録
+        recordHealthHistory(playerHealth, playerHealthHistory);
+        recordHealthHistory(cpuHealth, cpuHealthHistory);
+    }
+
+    private void recordHealthHistory(int health, int[] healthHistory) {
+        for (int i = 0; i < healthHistory.length; i++) {
+            if (healthHistory[i] == -9999) {
+                healthHistory[i] = health;
                 break;
             }
         }
