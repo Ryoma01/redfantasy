@@ -3,29 +3,43 @@ public class Main {
 
     public static void main(String[] args) {
         initializeMonsters();
+		runGameLoop();
+		displayPlayerHistory();
+		displayCpuHistory();
+    }
 
+	private static void runGameLoop() {
         while (true) {
             try {
-                if (redFantasyInstance.getPlayerHealth() > 0 && redFantasyInstance.getCpuHealth() > 0) {
-                    Thread.sleep(3000);
-                    redFantasyInstance.startPhase();
-                } else if (redFantasyInstance.getPlayerHealth() <= 0) {
-                    System.out.println("Playerは死んでしまった");
-                    break;
-                } else if (redFantasyInstance.getCpuHealth() <= 0) {
-                    System.out.println("CPUは死んでしまった");
-                    break;
-                }
+                if (gameOver()) return;
+                Thread.sleep(3000);
+                redFantasyInstance.startPhase();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
+    }
 
+	private static boolean gameOver() {
+        if (redFantasyInstance.getPlayerHealth() <= 0) {
+            System.out.println("Playerは死んでしまった");
+            return true;
+        }
+        if (redFantasyInstance.getCpuHealth() <= 0) {
+            System.out.println("CPUは死んでしまった");
+            return true;
+        }
+        return false;
+    }
+
+	private static void displayPlayerHistory() {
         System.out.println("Player History:");
         for (int i = 0; i < redFantasyInstance.getPlayerHealthHistory().length && redFantasyInstance.getPlayerHealthHistory()[i] != -9999; i++) {
             System.out.print(redFantasyInstance.getPlayerHealthHistory()[i] + "\t");
         }
+    }
 
+	private static void displayCpuHistory() {
         System.out.println("\nCPU History:");
         for (int i = 0; i < redFantasyInstance.getCpuHealthHistory().length && redFantasyInstance.getCpuHealthHistory()[i] != -9999; i++) {
             System.out.print(redFantasyInstance.getCpuHealthHistory()[i] + "\t");
