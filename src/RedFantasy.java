@@ -107,8 +107,11 @@ public class RedFantasy {
     private int calculateBonusPoints(int diceRoll, int[] monsters, int[] monstersPoint) {
         if (diceRoll == 1) {
             halveMonsterPoints(monsters, monstersPoint);
-        } else if (diceRoll == 6) {
+            return diceRoll;
+        }
+        if (diceRoll == 6) {
             doubleMonsterPoints(monsters, monstersPoint);
+            return diceRoll;
         }
         return diceRoll;
     }
@@ -158,12 +161,16 @@ public class RedFantasy {
         if (playerTotalPoints > cpuTotalPoints) {
             System.out.println("Player Wins!");
             this.cpuHealth -= (playerTotalPoints - cpuTotalPoints);
-        } else if (cpuTotalPoints > playerTotalPoints) {
+            return;
+        }
+        
+        if (cpuTotalPoints > playerTotalPoints) {
             System.out.println("CPU Wins!");
             this.playerHealth -= (cpuTotalPoints - playerTotalPoints);
-        } else {
-            System.out.println("Draw!");
+            return;
         }
+        
+        System.out.println("Draw!");
     }
 
     private void recordBattleHistory() {
