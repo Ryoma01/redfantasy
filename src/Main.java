@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 public class Main {
     static RedFantasy redFantasyInstance = new RedFantasy();
 
@@ -33,18 +35,19 @@ public class Main {
     }
 
 	private static void displayPlayerHistory() {
-        System.out.println("Player History:");
-        for (int i = 0; i < redFantasyInstance.getPlayerHealthHistory().length && redFantasyInstance.getPlayerHealthHistory()[i] != -9999; i++) {
-            System.out.print(redFantasyInstance.getPlayerHealthHistory()[i] + "\t");
-        }
-    }
+		System.out.println("Player History:");
+		Arrays.stream(redFantasyInstance.getPlayerHealthHistory())
+			  .takeWhile(health -> health != -9999)
+			  .forEach(health -> System.out.print(health + "\t"));
+	}
+	
 
 	private static void displayCpuHistory() {
-        System.out.println("\nCPU History:");
-        for (int i = 0; i < redFantasyInstance.getCpuHealthHistory().length && redFantasyInstance.getCpuHealthHistory()[i] != -9999; i++) {
-            System.out.print(redFantasyInstance.getCpuHealthHistory()[i] + "\t");
-        }
-    }
+		System.out.println("\nCPU History:");
+		Arrays.stream(redFantasyInstance.getCpuHealthHistory())
+			  .takeWhile(health -> health != -9999)
+			  .forEach(health -> System.out.print(health + "\t"));
+	}
 
     public static void initializeMonsters() {
         String monsterNames[] = new String[22];
